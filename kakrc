@@ -112,3 +112,8 @@ plug "andreyorst/fzf.kak" defer fzf-file %{
     map global user t ': fzf-mode<ret>f' -docstring 'open a file with fzf'
     map global user r ': fzf-mode<ret>g' -docstring 'open a file found with rg'
 }
+
+# Automatic pair insertion
+plug "alexherbo2/auto-pairs.kak" config %{
+    enable-auto-pairs
+}
