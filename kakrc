@@ -55,6 +55,10 @@ evaluate-commands %sh{
 }
 plug "andreyorst/plug.kak" noload
 
+plug "nilium/kak-session-name" do %{
+    cargo install --force --path .
+}
+
 # parinfer -- matches braces in s-exprs.
 plug "eraserhd/parinfer-rust" do %{
     cargo install --force --path .
@@ -72,9 +76,9 @@ plug "kak-lsp/kak-lsp" do %{
     cp -n kak-lsp.toml ~/.config/kak-lsp/
 } config %{
     hook global WinSetOption filetype=(rust|go) %{
+        racer-disable-autocomplete
         lsp-enable-window
         lsp-inlay-hints-enable window
-        lsp-auto-signature-help-enable
         hook window BufWritePre .* lsp-formatting-sync
     }
 }
@@ -91,20 +95,30 @@ plug "andreyorst/powerline.kak" defer powerline %{
 
 # Indentation
 plug "andreyorst/smarttab.kak" config %{
-    hook global WinSetOption filetype=(go) %{
+    hook global WinSetOption filetype=go %{
         smarttab
+    }
+    hook global WinSetOption filetype=(rust|markdown|kak) %{
+        expandtab
     }
 }
 
 # Set some base indentation options for Go. These don't depend on smarttab, so
 # are left out of that config block.
-hook global BufSetOption filetype=(go) %{
+hook global BufSetOption filetype=go %{
     set-option buffer indentwidth 8
     set-option buffer tabstop 8
 }
 
-# fzf
-plug "andreyorst/fzf.kak" defer fzf-file %{
+hook global BufSetOption filetype=(rust|markdown|kak) %{
+    set-option buffer indentwidth 4
+    set-option buffer tabstop 4
+}
+
+# fzf -- using personal branch that displays fzf in a popup. This does mean you
+# can't have multiple fzf-s open at a time, which seems like a reasonable limit
+# to me.
+plug "nilium/fzf.kak" branch "tmux-popup" defer fzf-file %{
     set-option global fzf_file_command 'fd -tf'
 } defer fzf-grep %{
     set-option global fzf_grep_command 'rg'
@@ -116,4 +130,18 @@ plug "andreyorst/fzf.kak" defer fzf-file %{
 # Automatic pair insertion
 plug "alexherbo2/auto-pairs.kak" config %{
     enable-auto-pairs
+}
+
+plug "https://gitlab.com/Screwtapello/kakoune-state-save" config %{
+    hook global KakBegin .* %{
+        state-save-reg-load colon
+        state-save-reg-load pipe
+        state-save-reg-load slash
+    }
+
+    hook global KakEnd .* %{
+        state-save-reg-save colon
+        state-save-reg-save pipe
+        state-save-reg-save slash
+    }
 }
