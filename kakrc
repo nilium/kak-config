@@ -83,7 +83,7 @@ plug "kak-lsp/kak-lsp" do %{
 plug "andreyorst/powerline.kak" defer powerline %{
     powerline-separator global bars
     powerline-format global 'git bufname mode_info filetype lsp session client line_column position'
-} defer powerline_tomorrow_night %{
+} defer powerline_desertex %{
     powerline-theme desertex
 } config %{
     powerline-start
