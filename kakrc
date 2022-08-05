@@ -10,6 +10,10 @@ hook global RegisterModified '"' %{ nop %sh{
 # map global user p '<a-!>pbpaste<ret>'
 # map global user R '|pbpaste<ret>'
 
+# Doesn't work in iTerm -- requires an iTerm binding to send 0x1b;0xcb for
+# <c-semicolon>.
+map global normal <c-semicolon> <a-semicolon> -docstring 'swap caret locations'
+
 declare-user-mode buffer-nav
 
 # Easier buffer navigation, based on my Vim bindings.
@@ -44,6 +48,31 @@ map global user | ':vsplit<ret>' -docstring 'split vertically'
 
 # Add line number column.
 add-highlighter global/line-numbers number-lines -relative
+
+# Highlight trailing whitespace as an error.
+add-highlighter global/ regex \h+$ 0:Error
+
+# Keep context around the window borders.
+set-option global scrolloff 3,5
+
+# Sort of janky command to align everything that matches the current literal
+# selection.
+define-command -params 0..1 align-in -docstring 'align all instances of the main selection in an object' %{
+    evaluate-commands -draft %sh{
+        obj="${1:-p}"
+        case "$obj" in
+        '%') :;;
+        *) obj="<a-i>$obj";;
+        esac
+        expr="$(printf '%s' "$kak_selection" | sed -Ee 's/^/\\\\Q/;s/\\E/\\E\\\\\\\\E\\\\Q/g')"
+        echo "execute-keys '${obj}s${expr}<ret>&'"
+    }
+}
+
+# Also a janky command to strip whitespace on demand.
+define-command strip-ws -docstring 'strip trailing whitespace from buffer' %{
+    try %{ execute-keys -draft -save-regs '"' '%s[ \t]+$<ret>d' }
+}
 
 # plug.kak -- Plugin manager.
 evaluate-commands %sh{
