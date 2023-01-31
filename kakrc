@@ -10,6 +10,9 @@ hook global RegisterModified '"' %{ nop %sh{
 # map global user p '<a-!>pbpaste<ret>'
 # map global user R '|pbpaste<ret>'
 
+map global normal <space> ","
+map global normal , " "
+
 # Doesn't work in iTerm -- requires an iTerm binding to send 0x1b;0xcb for
 # <c-semicolon>.
 map global normal <c-semicolon> <a-semicolon> -docstring 'swap caret locations'
