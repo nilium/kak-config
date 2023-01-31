@@ -112,6 +112,10 @@ plug "kak-lsp/kak-lsp" do %{
         lsp-enable-window
         lsp-inlay-hints-enable window
         hook window BufWritePre .* lsp-formatting-sync
+        map window normal <C-k> ': lsp-code-actions<ret>'
+        map window normal <C-K> ': lsp-code-lens<ret>'
+        map window user k ': lsp-hover<ret>'
+        map window user K ': lsp-hover-buffer<ret>'
     }
 }
 
